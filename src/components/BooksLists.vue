@@ -10,67 +10,43 @@ export default {
     },
   },
   methods: {
-    deleteBook() {
-      if (!confirm(`Seguro que quieres borrar el libro ${this.book.id}?`)) {
+    deleteBook(bookId) {
+      if (!confirm(`Seguro que quieres borrar el libro ${bookId}?`)) {
         return;
       }
       try {
-        store.deleteBook(this.book.id);
-      } catch (error) {}
+        store.deleteBook(bookId);
+      } catch (error) {
+        console.error("Error al borrar el libro:", error);
+      }
     },
-    addtocart() {
-      if (
-        !confirm(
-          `Seguro que quieres agregar el libro ${this.book.id} al carrito?`
-        )
-      ) {
+    addToCart(bookId) {
+      const book = this.books.find((b) => b.id === bookId);
+      if (!book) {
+        console.error(`No se encontró el libro con ID ${bookId}`);
         return;
       }
-      store.addToCart(this.book);
-      console.log(store.state.cart);
+      if (!confirm(`Seguro que quieres agregar el libro ${bookId} al carrito?`)) {
+        return;
+      }
+      store.addToCart(book);
+      console.log("Carrito actualizado:", store.state.cart);
     },
   },
 };
 </script>
-<template>
-    <div id="list">
-    <div class="card">
-      <book-item v-for="book in books" :key="book.id" :book="book">
-        <button class="addtocart" :value="book.id" @click="addtocart(book)">
-            <span class="material-icons">add_shopping_cart</span>
-        </button>
-        <button class="removebutton" :value="book.id" @click="deleteBook(book.id)">
-            <span class="material-icons">delete</span>
-        </button>
-        <button class="editbutton" :value="book.id">
-            <span class="material-icons">edit</span>
-        </button>
-      </book-item>
-    </div>
-  </div>
-</template>
 
-
-</template>
 <template>
   <div id="list">
-    <div class="card">
-      <book-item v-for="book in books" :key="book.id" :book="book">
-        <button
-          class="addtocart"
-          :value="book.id"
-          @click="callAddToCart(book.id)"
-        >
+    <div class="card" v-for="book in books" :key="book.id">
+      <book-item :book="book">
+        <button class="addtocart" @click="addToCart(book.id)">
           <span class="material-icons">add_shopping_cart</span>
         </button>
-        <button
-          class="removebutton"
-          :value="book.id"
-          @click="callDeleteBook(book.id)"
-        >
+        <button class="removebutton" @click="deleteBook(book.id)">
           <span class="material-icons">delete</span>
         </button>
-        <button class="editbutton" :value="book.id">
+        <button class="editbutton">
           <span class="material-icons">edit</span>
         </button>
       </book-item>
