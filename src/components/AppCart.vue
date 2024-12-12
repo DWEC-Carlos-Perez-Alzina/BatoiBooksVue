@@ -30,7 +30,7 @@ export default {
     <div class="card">
         <book-item v-for="book in cart" :key="book.id" :book="book">
             <button class="removebutton" @click="removeFromCart(book.id)">
-                <span class="material-icons">delete</span>
+                <span class="material-icons">remove_shopping_cart</span>
             </button>
         </book-item>
     </div>
