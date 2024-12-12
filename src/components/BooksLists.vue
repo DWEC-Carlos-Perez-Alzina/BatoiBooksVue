@@ -1,5 +1,7 @@
 <script>
+import { mapActions } from "pinia";
 import { store } from "../storage.js";
+import { useStorage } from '../stores/storage.js'
 import BookItem from "./BookItem.vue";
 
 export default {
@@ -10,7 +12,7 @@ export default {
     };
   },
   async created() {
-    this.books = await store.getDBBooks();
+    this.books = await this.getDBBooks();
   },
   methods: {
     deleteBook(bookId) {
@@ -18,26 +20,27 @@ export default {
         return;
       }
       try {
-        store.deleteBook(bookId);
+        this.deleteBookST(bookId);
         this.books.splice(this.books.findIndex(book => book.id === bookId), 1);
       } catch (error) {
-        store.addMessage("Error al borrar el libro:", error);
+        this.addMessage("Error al borrar el libro:", error);
       }
     },
     addToCart(bookId) {
       const book = this.books.find((b) => b.id === bookId);
       if (!book) {
-        store.addMessage(`No se encontró el libro con ID ${bookId}`, "error");
+        this.addMessage(`No se encontró el libro con ID ${bookId}`, "error");
         return;
       }
       if (!confirm(`Seguro que quieres agregar el libro ${bookId} al carrito?`)) {
         return;
       }
-      store.addToCart(book);
+      this.addToCartST(book);
     },
     goToEditBook(bookId) {
       this.$router.push('/edit/' + bookId);
-    }
+    },
+    ...mapActions(useStorage, ['getDBBooks', 'deleteBookST', 'addToCartST']),
   },
 };
 </script>

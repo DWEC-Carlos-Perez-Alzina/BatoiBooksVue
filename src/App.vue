@@ -1,5 +1,5 @@
 <script>
-import { store } from './storage.js' 
+import { useStorage } from './stores/storage.js'
 import batoiLogo from "/logoBatoi.png"
 import AppMenu from './components/AppMenu.vue'
 import AppMessages from './components/AppMessages.vue'
@@ -7,6 +7,7 @@ import BooksList from './components/BooksLists.vue'
 import AddBook from './components/AddBook.vue'
 import AboutView from "./views/AboutView.vue"
 import AppCart from './components/AppCart.vue'
+import { mapActions } from 'pinia'
 
 export default {
   components: {
@@ -22,8 +23,11 @@ export default {
       batoiLogo
     }
   },
+  methods: {
+    ...mapActions(useStorage, ['populate']),
+  },
   created() {
-    store.populate();
+    this.populate()
   }
 }
 </script>

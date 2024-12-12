@@ -1,13 +1,14 @@
 <script>
+import { mapActions, mapState } from 'pinia';
 import { store } from '../storage.js'
+import { useStorage } from '../stores/storage.js'
 import BookItem from './BookItem.vue'
+
 export default {
     name: 'AppCart',
     components: { BookItem },
     computed: {
-        cart() {
-            return store.state.cart
-        }
+        ...mapState(useStorage, ['cart'])
     },
     methods: {
         removeFromCart(bookId) {
@@ -15,11 +16,12 @@ export default {
                 return
             }
             try {
-                store.removeFromCart(bookId)
+                this.removeFromCartSt(bookId)
             } catch (error) {
-                store.addMessage(error.message, 'error')
+                this.addMessage(error.message, 'error')
             }
-        }
+        },
+        ...mapActions(useStorage, ['removeFromCartSt', 'addMessage'])
     }
 }
 </script>

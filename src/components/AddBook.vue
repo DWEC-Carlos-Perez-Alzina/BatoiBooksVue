@@ -1,5 +1,8 @@
 <script>
+import { mapActions, mapState } from 'pinia';
+import { useStorage } from '../stores/storage.js'
 import { store } from '../storage.js'
+
 export default {
   name: 'AddBook',
   props: ['id'],
@@ -9,13 +12,11 @@ export default {
     };
   },
   computed: {
-    modules() {
-      return store.state.modules;
-    }
+    ...mapState(useStorage, ['modules'])
   },
   async created() {
     if (this.id) {
-      this.book = await store.getDBBook(this.id);
+      this.book = await this.getDBBook(this.id);
     }
   },
   watch: {
@@ -27,9 +28,9 @@ export default {
   methods: {
     async handleBook() {
       if (this.id === undefined) {
-        await store.addBook(this.book);
+        await this.addBookST(this.book);
       } else {
-        await store.editBook(this.book);
+        await this.editBookST(this.book);
       }
       this.book = {};
       this.$router.push('/list');
@@ -38,9 +39,10 @@ export default {
       if (this.id === undefined) {
         this.book = {};
       } else {
-        this.book = await store.getDBBook(this.id);
+        this.book = await this.getDBBook(this.id);
       }
-    }
+    },
+    ...mapActions(useStorage, ['getDBBook', 'addBookST', 'editBookST'])
   }
 }
 </script>

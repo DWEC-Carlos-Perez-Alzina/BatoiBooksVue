@@ -1,12 +1,17 @@
 <script>
+import { mapActions } from 'pinia';
+import { useStorage } from '../stores/storage.js'
 import { store } from '../storage.js'
 export default {
     name: 'BookItem',
     props: ['book'],
     computed: {
         module() {
-            return store.getModuleByBookId(this.book.moduleCode) || {};
+            return this.getModuleByBookId(this.book.moduleCode) || {};
         }
+    },
+    methods: {
+        ...mapActions(useStorage, ['getModuleByBookId']),
     }
 }
 </script>

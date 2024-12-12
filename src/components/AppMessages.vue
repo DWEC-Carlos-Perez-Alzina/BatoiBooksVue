@@ -1,17 +1,18 @@
 <script>
 import { store } from '@/storage';
+import { useStorage } from '../stores/storage.js'
+import { mapActions, mapState } from 'pinia';
 
 export default {
   name: 'AppMessages',
   computed: {
-    messages() {
-      return store.state.messages
-    }
+    ...mapState(useStorage, ['messages'])
   },
   methods: {
     closeMessage() {
-      store.deleteMessage();
-    }
+      this.deleteMessage();
+    },
+    ...mapActions(useStorage, ['deleteMessage'])
   },
 }
 </script>
