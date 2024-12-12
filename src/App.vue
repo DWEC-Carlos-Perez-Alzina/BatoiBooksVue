@@ -37,10 +37,7 @@ export default {
 <app-menu></app-menu>
 <div>
   <app-messages></app-messages>
-  <books-list></books-list>
-  <add-book></add-book>
-  <about-view></about-view>
-  <app-cart></app-cart>
+  <router-view></router-view>
   <footer>
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos doloremque dolores!
   </footer>
@@ -48,65 +45,28 @@ export default {
 </template>
 
 <style scoped>
+/* Layout */
 header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
+  background-color: #333;
+  color: white;
+  padding: 10px;
   text-align: center;
-  margin-top: 2rem;
+  top: 0;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+header img {
+  width: 50px;
+  vertical-align: middle;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+header h1 {
+  display: inline;
+  font-size: 36px;
+  margin-left: 10px;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+header h3 {
+  font-size: 20px;
+  margin-top: 5px;
 }
 </style>

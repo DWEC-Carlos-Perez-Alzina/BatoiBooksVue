@@ -4,10 +4,13 @@ import BookItem from "./BookItem.vue";
 
 export default {
   components: { BookItem },
-  computed: {
-    books() {
-      return store.state.books;
-    },
+  data() {
+    return {
+      books: []
+    };
+  },
+  async created() {
+    this.books = await store.getDBBooks();
   },
   methods: {
     deleteBook(bookId) {
@@ -16,22 +19,25 @@ export default {
       }
       try {
         store.deleteBook(bookId);
+        this.books.splice(this.books.findIndex(book => book.id === bookId), 1);
       } catch (error) {
-        console.error("Error al borrar el libro:", error);
+        store.addMessage("Error al borrar el libro:", error);
       }
     },
     addToCart(bookId) {
       const book = this.books.find((b) => b.id === bookId);
       if (!book) {
-        console.error(`No se encontró el libro con ID ${bookId}`);
+        store.addMessage(`No se encontró el libro con ID ${bookId}`, "error");
         return;
       }
       if (!confirm(`Seguro que quieres agregar el libro ${bookId} al carrito?`)) {
         return;
       }
       store.addToCart(book);
-      console.log("Carrito actualizado:", store.state.cart);
     },
+    goToEditBook(bookId) {
+      this.$router.push('/edit/' + bookId);
+    }
   },
 };
 </script>
@@ -46,7 +52,7 @@ export default {
         <button class="removebutton" @click="deleteBook(book.id)">
           <span class="material-icons">delete</span>
         </button>
-        <button class="editbutton">
+        <button class="editbutton" @click="goToEditBook(book.id)">
           <span class="material-icons">edit</span>
         </button>
       </book-item>

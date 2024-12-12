@@ -13,7 +13,7 @@ export default class ModulesApi {
             return response.data;
         } catch (error) {
             console.error('Error al obtener módulos:', error);
-            throw error; // Re-llama al error para manejarlo externamente
+            throw error;
         }
     }
 
@@ -28,7 +28,7 @@ export default class ModulesApi {
             return response.data;
         } catch (error) {
             console.error(`Error al obtener el módulo con ID ${id}:`, error);
-            throw error; // Re-llama al error para manejarlo externamente
+            throw error;
         }
     }
 }

@@ -2,36 +2,57 @@
 import { store } from '../storage.js'
 export default {
   name: 'AddBook',
-  computed: {
-    modules() {
-      return store.state.modules
-    }
-  },
+  props: ['id'],
   data() {
     return {
-      book: {},
+      book: {}
+    };
+  },
+  computed: {
+    modules() {
+      return store.state.modules;
+    }
+  },
+  async created() {
+    if (this.id) {
+      this.book = await store.getDBBook(this.id);
+    }
+  },
+  watch: {
+    id() {
+      console.log(this.id)
+      this.resetForm();
     }
   },
   methods: {
-    async addBook() {
-      await store.addBook(this.book);
+    async handleBook() {
+      if (this.id === undefined) {
+        await store.addBook(this.book);
+      } else {
+        await store.editBook(this.book);
+      }
       this.book = {};
+      this.$router.push('/list');
     },
-    resetForm() {
-      this.book = {};
+    async resetForm() {
+      if (this.id === undefined) {
+        this.book = {};
+      } else {
+        this.book = await store.getDBBook(this.id);
+      }
     }
   }
 }
 </script>
 
 <template>
-    <div id="form">
-    <h2>Añadir libro</h2>
-    <form id="bookForm" @submit.prevent="addBook" @reset.prevent="resetForm" novalidate>
-      <div>
-        <label for="id" id="id-label" class="hidden">ID:</label>
-        <input type="text" id="id" name="id" class="hidden" readonly disabled>
-        </br>
+  <div id="form">
+    <h2>{{ this.id ? 'Editar' : 'Añadir' }} libro</h2>
+    <form id="bookForm" @submit.prevent="handleBook" @reset.prevent="resetForm" novalidate>
+      <div v-if="this.id">
+        <label for="id" id="id-label">ID:</label>
+        <input type="text" id="id" name="id" v-model="book.id" readonly disabled>
+        <br />
       </div>
       <div>
         <label for="id-module">Módulo:</label>
@@ -41,28 +62,21 @@ export default {
         </select>
         <span id="id-module-error" class="error"></span>
       </div>
-
       <div>
         <label for="publisher">Editorial:</label>
         <input type="text" id="publisher" required v-model="book.publisher">
         <span id="publisher-error" class="error"></span>
-
       </div>
-
       <div>
         <label for="price">Precio:</label>
         <input type="number" id="price" required min="0" step="0.01" v-model="book.price">
         <span id="price-error" class="error"></span>
-
       </div>
-
       <div>
         <label for="pages">Páginas:</label>
         <input type="number" id="pages" required min="0" step="1" v-model="book.pages">
         <span id="pages-error" class="error"></span>
-
       </div>
-
       <div>
         <label>Estado:</label>
         <label>
@@ -76,16 +90,14 @@ export default {
         </label>
         <span id="status-error" class="error"></span>
       </div>
-
       <div>
         <label for="comments">Comentarios:</label>
         <textarea id="comments" v-model="book.comments"></textarea>
         <span class="error"></span>
-
       </div>
-
-      <button type="submit">Añadir</button>
+      <button type="submit">{{ this.id ? 'Editar' : 'Añadir' }}</button>
       <button type="reset">Reset</button>
     </form>
   </div>
 </template>
+

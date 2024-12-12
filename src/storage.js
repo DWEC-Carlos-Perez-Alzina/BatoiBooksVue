@@ -8,32 +8,31 @@ export const store = {
     state: reactive({
         booksApi: new BooksApi(),
         modulesApi: new ModulesApi(),
-        books: [],
         modules: [],
         cart: [],
         messages: []
     }),
     async populate() {
         try {
-            const [books, modules] = await Promise.all([
-                this.state.booksApi.getDBBooks(),
-                this.state.modulesApi.getDBModules()
-            ])
+            const modules = await this.state.modulesApi.getDBModules()
 
-            this.state.books = books
             this.state.modules = modules
         } catch (error) {
             console.log(error)
         }
         
     },
-    getBooks() {
-        return this.state.books
-    },
-    getBookById(id) {
+    async getDBBooks() {
         try {
-            return this.state.books.find(book => book.id === id)
-        } catch (error) {
+            return await this.state.booksApi.getDBBooks()
+        } catch(error) {
+            this.addMessage(error.message, 'error')
+        }
+    },
+    async getDBBook(id) {
+        try {
+            return await this.state.booksApi.getDBBook(id)
+        } catch(error) {
             this.addMessage(error.message, 'error')
         }
     },
@@ -47,7 +46,6 @@ export const store = {
     async addBook(book) {
         try {
             await this.state.booksApi.addDBBook(book)
-            this.state.books.push(book)
             this.addMessage('Libro agregado correctamente', 'success')
         } catch (error) {
             addMessage(error.message, 'error')
@@ -56,23 +54,21 @@ export const store = {
     async deleteBook(id) {
         try {
             await this.state.booksApi.removeDBBook(id)
-            const bookId = this.getBookIndexById(id)
-            this.state.books.splice(bookId, 1)
             this.addMessage('Libro borrado correctamente', 'success')
         } catch (error) {
             addMessage(error.message, 'error')
         }
     },
-    getBookIndexById(bookId) {
-        const index = Array.from(this.state.books).findIndex(book => book.id === bookId)
-        if (index === -1) {
-            addMessage('Libro no encontrado', 'error')
+    async editBook(book) {
+        try {
+            await this.state.booksApi.changeDBBook(book)
+            this.addMessage('Libro editado correctamente', 'success')
+        } catch(error) {
+            this.addMessage(error.message, 'error')
         }
-        return index
-    
     },
     getBookInCart(bookId) {
-        const book = this.getBookById(bookId)
+        const book = this.getDBBook(bookId)
         this.state.cart.find(cartBook => cartBook.id === book.id)
     },
     addToCart(book) {

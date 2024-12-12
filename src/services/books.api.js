@@ -43,7 +43,7 @@ export default class BooksApi {
 
     async removeDBBook(id) {
         try {
-            await this.getDBBook(id); // Verifica que el libro exista
+            await this.getDBBook(id);
             const response = await axios.delete(`${SERVER}/books/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
