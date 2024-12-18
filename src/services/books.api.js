@@ -5,9 +5,6 @@ export default class BooksApi {
     async getDBBooks() {
         try {
             const response = await axios.get(`${SERVER}/books`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
             return response.data;
         } catch (error) {
@@ -18,9 +15,6 @@ export default class BooksApi {
     async getDBBook(id) {
         try {
             const response = await axios.get(`${SERVER}/books/${id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
             return response.data;
         } catch (error) {
@@ -31,9 +25,6 @@ export default class BooksApi {
     async addDBBook(book) {
         try {
             const response = await axios.post(`${SERVER}/books`, book, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
             return response.data;
         } catch (error) {
@@ -45,9 +36,6 @@ export default class BooksApi {
         try {
             await this.getDBBook(id);
             const response = await axios.delete(`${SERVER}/books/${id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
             return response.data;
         } catch (error) {
@@ -58,9 +46,6 @@ export default class BooksApi {
     async changeDBBook(book) {
         try {
             const response = await axios.put(`${SERVER}/books/${book.id}`, book, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
             return response.data;
         } catch (error) {
@@ -71,9 +56,6 @@ export default class BooksApi {
     async getDBBooksByUserIdAndModule(userId, idModule) {
         try {
             const response = await axios.get(`${SERVER}/books?userId=${userId}&moduleId=${idModule}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
             return response.data;
         } catch (error) {
@@ -81,3 +63,4 @@ export default class BooksApi {
         }
     }
 }
+

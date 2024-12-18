@@ -1,7 +1,6 @@
 <script>
 import { mapActions } from 'pinia';
 import { useStorage } from '../stores/storage.js'
-import { store } from '../storage.js'
 export default {
     name: 'BookItem',
     props: ['book'],

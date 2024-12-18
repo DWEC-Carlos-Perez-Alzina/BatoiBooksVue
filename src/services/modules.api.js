@@ -5,9 +5,6 @@ export default class ModulesApi {
     async getDBModules() {
         try {
             const response = await axios.get(`${SERVER}/modules`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
 
             return response.data;
@@ -20,9 +17,6 @@ export default class ModulesApi {
     async getDBModule(id) {
         try {
             const response = await axios.get(`${SERVER}/module?id=${id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
 
             return response.data;

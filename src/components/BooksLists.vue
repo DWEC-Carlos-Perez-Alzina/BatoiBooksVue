@@ -8,7 +8,7 @@ export default {
   components: { BookItem },
   data() {
     return {
-      books: []
+      books: [],
     };
   },
   async created() {
@@ -46,6 +46,7 @@ export default {
 </script>
 
 <template>
+  <h1>Hay un total de {{ books.length }} libro/s</h1>
   <div id="list">
     <div class="card" v-for="book in books" :key="book.id">
       <book-item :book="book">
