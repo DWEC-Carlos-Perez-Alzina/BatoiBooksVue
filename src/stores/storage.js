@@ -70,6 +70,9 @@ export const useStorage = defineStore("storage", {
     async deleteBookST(id) {
       try {
         await this.booksApi.removeDBBook(id);
+        if (this.estaEnElCarro(id)) {
+          this.removeFromCartSt(id);
+        }
         this.addMessage("Libro borrado correctamente", "success");
       } catch (error) {
         this.addMessage(error.message, "error");
@@ -77,11 +80,19 @@ export const useStorage = defineStore("storage", {
     },
     async editBookST(book) {
       try {
-        await this.booksApi.changeDBBook(book);
+        const newBook = await this.booksApi.changeDBBook(book);
+        this.getDBBook(book.id);
+        if (this.estaEnElCarro(book.id)) {
+          this.removeFromCartSt(book.id);
+          this.addToCartST(newBook);
+        }
         this.addMessage("Libro editado correctamente", "success");
       } catch (error) {
         this.addMessage(error.message, "error");
       }
+    },
+    estaEnElCarro(id) {
+      return this.cart.some((book) => book.id === id);
     },
     addToCartST(book) {
       if (this.getBookInCart(book.id)) {

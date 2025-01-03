@@ -40,7 +40,7 @@ export default {
     goToEditBook(bookId) {
       this.$router.push('/edit/' + bookId);
     },
-    ...mapActions(useStorage, ['getDBBooks', 'deleteBookST', 'addToCartST']),
+    ...mapActions(useStorage, ['getDBBooks', 'deleteBookST', 'addToCartST', 'estaEnElCarro']),
   },
 };
 </script>
@@ -50,7 +50,7 @@ export default {
   <div id="list">
     <div class="card" v-for="book in books" :key="book.id">
       <book-item :book="book">
-        <button class="addtocart" @click="addToCart(book.id)">
+        <button class="addtocart" @click="addToCart(book.id)" :disabled="estaEnElCarro(book.id)" :style="{ opacity: estaEnElCarro(book.id) ? 0.5 : 1 }">
           <span class="material-icons">add_shopping_cart</span>
         </button>
         <button class="removebutton" @click="deleteBook(book.id)">

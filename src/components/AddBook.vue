@@ -1,18 +1,35 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useStorage } from '../stores/storage.js'
-import { store } from '../storage.js'
+import { useStorage } from '../stores/storage.js';
+import { Form, Field, ErrorMessage } from "vee-validate";
+import * as yup from "yup";
 
 export default {
   name: 'AddBook',
   props: ['id'],
   data() {
+    const bookSchema = yup.object({
+      moduleCode: yup.string().required("El módulo es obligatorio, por favor seleccione uno"),
+      publisher: yup.string().required("La editorial es obligatoria"),
+      price: yup.number().required("El precio es obligatorio").min(0, "El precio debe ser mayor que 0").typeError("El precio debe ser un número"),
+      pages: yup.number().required("Las páginas son obligatorias").min(0, "Las páginas deben ser mayor que 0").typeError("Las páginas deben ser un número"),
+      status: yup.string().required("El estado es obligatorio").oneOf(["Good", "New", "Old"]),
+      comments: yup.string(),
+    });
+
     return {
-      book: {}
+      bookSchema,
+      book: {},
+      estado: ["Good", "New", "Old"],
     };
   },
   computed: {
-    ...mapState(useStorage, ['modules'])
+    ...mapState(useStorage, ['modules']),
+  },
+  components: {
+    Form,
+    Field,
+    ErrorMessage
   },
   async created() {
     if (this.id) {
@@ -21,18 +38,16 @@ export default {
   },
   watch: {
     id() {
-      console.log(this.id)
       this.resetForm();
-    }
+    },
   },
   methods: {
-    async handleBook() {
+    async handleBook(values) {
       if (this.id === undefined) {
-        await this.addBookST(this.book);
+        await this.addBookST(values);
       } else {
-        await this.editBookST(this.book);
+        await this.editBookST(values);
       }
-      this.book = {};
       this.$router.push('/list');
     },
     async resetForm() {
@@ -42,64 +57,57 @@ export default {
         this.book = await this.getDBBook(this.id);
       }
     },
-    ...mapActions(useStorage, ['getDBBook', 'addBookST', 'editBookST'])
-  }
-}
+    ...mapActions(useStorage, ['getDBBook', 'addBookST', 'editBookST']),
+  },
+};
 </script>
 
-<template>
+<<template>
   <div id="form">
-    <h2>{{ this.id ? 'Editar' : 'Añadir' }} libro</h2>
-    <form id="bookForm" @submit.prevent="handleBook" @reset.prevent="resetForm" novalidate>
-      <div v-if="this.id">
-        <label for="id" id="id-label">ID:</label>
-        <input type="text" id="id" name="id" v-model="book.id" readonly disabled>
-        <br />
+    <h2>{{ id ? 'Editar' : 'Añadir' }} libro</h2>
+    <Form :validation-schema="bookSchema" @submit="handleBook" :initial-values="book">
+      <div v-if="id">
+        <label for="id">ID:</label>
+        <Field type="text" id="id" name="id" v-model="book.id" :value="book.id" readonly disabled />
       </div>
       <div>
-        <label for="id-module">Módulo:</label>
-        <select id="id-module" v-model="book.moduleCode" required>
-          <option value="undefined" disabled>- Selecciona un módulo -</option>
+        <label for="moduleCode">Módulo:</label>
+        <Field as="select" id="moduleCode" name="moduleCode" v-model="book.moduleCode" required>
+          <option value="" disabled>- Selecciona un módulo -</option>
           <option v-for="module in modules" :key="module.code" :value="module.code">{{ module.cliteral }}</option>
-        </select>
-        <span id="id-module-error" class="error"></span>
+        </Field>
+        <ErrorMessage name="moduleCode" class="error" />
       </div>
       <div>
         <label for="publisher">Editorial:</label>
-        <input type="text" id="publisher" required v-model="book.publisher">
-        <span id="publisher-error" class="error"></span>
+        <Field type="text" id="publisher" name="publisher" v-model="book.publisher" />
+        <ErrorMessage name="publisher" class="error" />
       </div>
       <div>
         <label for="price">Precio:</label>
-        <input type="number" id="price" required min="0" step="0.01" v-model="book.price">
-        <span id="price-error" class="error"></span>
+        <Field type="number" id="price" name="price" v-model="book.price" />
+        <ErrorMessage name="price" class="error" />
       </div>
       <div>
         <label for="pages">Páginas:</label>
-        <input type="number" id="pages" required min="0" step="1" v-model="book.pages">
-        <span id="pages-error" class="error"></span>
+        <Field type="number" id="pages" name="pages" v-model="book.pages" />
+        <ErrorMessage name="pages" class="error" />
       </div>
       <div>
         <label>Estado:</label>
-        <label>
-          <input type="radio" id="good" name="status" value="good" v-model="book.status" required> Good
-        </label>
-        <label>
-          <input type="radio" id="new" name="status" value="new" v-model="book.status" required> New
-        </label>
-        <label>
-          <input type="radio" id="old" name="status" value="old" v-model="book.status" required> Old
-        </label>
-        <span id="status-error" class="error"></span>
+        <div v-for="status in estado" :key="status">
+          <Field type="radio" :value="status" name="status" v-model="book.status" />
+          {{ status }}
+        </div>
+        <ErrorMessage name="status" class="error" />
       </div>
       <div>
         <label for="comments">Comentarios:</label>
-        <textarea id="comments" v-model="book.comments"></textarea>
-        <span class="error"></span>
+        <Field as="textarea" id="comments" name="comments" v-model="book.comments" />
+        <ErrorMessage name="comments" class="error" />
       </div>
-      <button type="submit">{{ this.id ? 'Editar' : 'Añadir' }}</button>
-      <button type="reset">Reset</button>
-    </form>
+      <button type="submit">{{ id ? 'Editar' : 'Añadir' }}</button>
+      <button type="reset" @click="resetForm">Reset</button>
+    </Form>
   </div>
 </template>
-
